@@ -1,5 +1,6 @@
 from Constants import *
 import pygame
+from os import path
 from pygame.locals import (
     K_UP,
     K_DOWN,
@@ -13,7 +14,6 @@ from pygame.locals import (
 from entities.Wall import Wall
 from entities.player import Player
 
-
 class Game:
 
     def __init__(self):
@@ -23,14 +23,21 @@ class Game:
         self.load_data()
 
     def load_data(self):
-        pass
+        game_folder = path.dirname(__file__)
+        self.map_data = []
+        with open(path.join(game_folder, 'maps/level1.txt'), 'rt') as file:
+            for line in file:
+                self.map_data.append(line)
+
 
     def new(self):
         self.all_sprites = pygame.sprite.Group()
         self.walls = pygame.sprite.Group()
         self.player = Player(self, 10, 10)
-        for x in range(10, 20):
-            Wall(self, x, 5)
+        for row, tiles in enumerate(self.map_data):
+            for col, tile in enumerate(tiles):
+                if tile == '1':
+                    Wall(self, col, row)
 
     def run(self):
         self.playing = True

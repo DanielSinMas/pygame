@@ -14,8 +14,15 @@ class Player(pygame.sprite.Sprite):
         self.y = y
 
     def move(self, movementX = 0, movementY = 0):
-        self.x += movementX
-        self.y += movementY
+        if not self.collide_with_wall(movementX, movementY):
+            self.x += movementX
+            self.y += movementY
+
+    def collide_with_wall(self, movementX=0, movementY=0):
+        for wall in self.game.walls:
+            if wall.x == self.x + movementX and wall.y == self.y + movementY:
+                return True
+        return False
 
     def update(self):
         self.rect.x = self.x * TILESIZE
