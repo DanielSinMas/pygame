@@ -1,6 +1,5 @@
 from Constants import *
 import pygame
-from os import path
 from pygame.locals import (
     K_UP,
     K_DOWN,
@@ -11,7 +10,7 @@ from pygame.locals import (
     QUIT,
 )
 
-from entities.Wall import Wall
+from Utilities.FileProcessor import FileProcessor
 from entities.player import Player
 
 class Game:
@@ -23,26 +22,18 @@ class Game:
         self.load_data()
 
     def load_data(self):
-        game_folder = path.dirname(__file__)
-        self.map_data = []
-        with open(path.join(game_folder, 'maps/level1.txt'), 'rt') as file:
-            for line in file:
-                self.map_data.append(line)
-
+        self.processor = FileProcessor(self)
 
     def new(self):
         self.all_sprites = pygame.sprite.Group()
         self.walls = pygame.sprite.Group()
         self.player = Player(self, 10, 10)
-        for row, tiles in enumerate(self.map_data):
-            for col, tile in enumerate(tiles):
-                if tile == '1':
-                    Wall(self, col, row)
+        self.processor.processFile('../maps/level1.txt')
 
     def run(self):
         self.playing = True
         while self.playing:
-            self.clock.tick(FPS)
+            self.dt = self.clock.tick(FPS) / 100
             self.events()
             self.update()
             self.draw()
@@ -70,14 +61,6 @@ class Game:
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     self.quit()
-                if event.key == K_LEFT:
-                    self.player.move(movementX = -1)
-                if event.key == K_RIGHT:
-                    self.player.move(movementX = 1)
-                if event.key == K_UP:
-                    self.player.move(movementY = -1)
-                if event.key == K_DOWN:
-                    self.player.move(movementY = 1)
 
     def show_start_screen(self):
         pass
