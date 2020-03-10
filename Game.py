@@ -1,17 +1,16 @@
 from Constants import *
 import pygame
+from Utilities.FileProcessor import FileProcessor
 from pygame.locals import (
-    K_UP,
-    K_DOWN,
-    K_LEFT,
-    K_RIGHT,
     K_ESCAPE,
     KEYDOWN,
     QUIT,
 )
 
-from Utilities.FileProcessor import FileProcessor
+from entities.Camera import Camera
+from entities.Wall import Wall
 from entities.player import Player
+
 
 class Game:
 
@@ -22,13 +21,18 @@ class Game:
         self.load_data()
 
     def load_data(self):
-        self.processor = FileProcessor(self)
+        self.processor = FileProcessor(self, '../maps/level2.txt')
 
     def new(self):
         self.all_sprites = pygame.sprite.Group()
         self.walls = pygame.sprite.Group()
-        self.player = Player(self, 10, 10)
-        self.processor.processFile('../maps/level1.txt')
+        for row, tiles in enumerate(self.processor.map_data):
+            for col, tile in enumerate(tiles):
+                if tile == '1':
+                    Wall(self, col, row)
+                if tile == 'P':
+                    self.player = Player(self, col, row)
+        self.camera = Camera(self.processor.width, self.processor.height)
 
     def run(self):
         self.playing = True
@@ -40,11 +44,13 @@ class Game:
 
     def update(self):
         self.all_sprites.update()
+        self.camera.update(self.player)
 
     def draw(self):
         self.screen.fill(BGCOLOR)
-        self.draw_grid()
-        self.all_sprites.draw(self.screen)
+        #self.draw_grid()
+        for sprite in self.all_sprites:
+            self.screen.blit(sprite.image, self.camera.apply(sprite))
         pygame.display.flip()
 
     def draw_grid(self):
@@ -52,7 +58,6 @@ class Game:
             pygame.draw.line(self.screen, LIGHTGREY, (x, 0), (x, SCREEN_HEIGHT))
         for y in range(0, SCREEN_HEIGHT, TILESIZE):
             pygame.draw.line(self.screen, LIGHTGREY, (0, y), (SCREEN_WIDTH, y))
-
 
     def events(self):
         for event in pygame.event.get():
@@ -67,5 +72,3 @@ class Game:
 
     def show_go_screen(self):
         pass
-
-

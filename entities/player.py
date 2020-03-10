@@ -1,8 +1,9 @@
 import pygame
 from Constants import *
 
+
 class Player(pygame.sprite.Sprite):
-    
+
     def __init__(self, game, x, y):
         self.groups = game.all_sprites
         pygame.sprite.Sprite.__init__(self, self.groups)

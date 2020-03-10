@@ -1,18 +1,16 @@
 from os import path
-from entities.Wall import Wall
+from Constants import *
 
 class FileProcessor:
-    def __init__(self, game):
+    def __init__(self, game, file):
         self.game = game
-
-    def processFile(self, file):
         game_folder = path.dirname(__file__)
         self.map_data = []
         with open(path.join(game_folder, file), 'rt') as file:
             for line in file:
-                self.map_data.append(line)
+                self.map_data.append(line.strip())
 
-        for row, tiles in enumerate(self.map_data):
-            for col, tile in enumerate(tiles):
-                if tile == '1':
-                    Wall(self.game, col, row)
+        self.tilewidth = len(self.map_data[0])
+        self.tileheight = len(self.map_data)
+        self.width = self.tilewidth * TILESIZE
+        self.height = self.tileheight * TILESIZE
