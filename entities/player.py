@@ -1,5 +1,6 @@
 import pygame
 from Constants import *
+from Utilities.SpriteSheet import SpriteSheet
 
 
 class Player(pygame.sprite.Sprite):
@@ -14,22 +15,40 @@ class Player(pygame.sprite.Sprite):
         self.vx, self.vy = 0, 0
         self.x = x * TILESIZE
         self.y = y * TILESIZE
+        self.sprite_sheet = SpriteSheet("images/isaac.png")
+        self.walking_frames_right = []
+        self.walking_frames_left = []
+        self.walking_frames_up = []
+        self.walking_frames_bottom = []
+        self.__createFrames__()
+        self.last_update = 0
+        self.image_position = 0
+        self.image = self.walking_frames_bottom[self.image_position]
+        self.direction = 2
+
 
     def get_keys(self):
         self.vx, self.vy = 0, 0
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
             self.vx = -PLAYER_SPEED
+            self.direction = 3
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             self.vx = PLAYER_SPEED
+            self.direction = 1
         if keys[pygame.K_UP] or keys[pygame.K_w]:
             self.vy = -PLAYER_SPEED
+            self.direction = 0
         if keys[pygame.K_DOWN] or keys[pygame.K_s]:
             self.vy = PLAYER_SPEED
+            self.direction = 2
 
         if self.vx != 0 and self.vy != 0:
             self.vx *= 0.7071
             self.vy *= 0.7071
+
+        if self.vx == 0 and self.vy ==0:
+            self.image_position = 0
 
     def collide_with_walls(self, direction):
         if direction == 'x':
@@ -60,3 +79,81 @@ class Player(pygame.sprite.Sprite):
         self.collide_with_walls('x')
         self.rect.y = self.y
         self.collide_with_walls('y')
+        self.now = pygame.time.get_ticks()
+        if self.now - self.last_update > 50:
+            self.image_position += 1
+            self.last_update = self.now
+            print(self.image_position)
+            if self.image_position == 6:
+                self.image_position = 0
+            frames = self.__get_frames()
+            self.image = frames[self.image_position]
+
+    def __get_frames(self):
+        if self.direction == 0:
+            return self.walking_frames_up
+        elif self.direction == 1:
+            return self.walking_frames_right
+        elif self.direction == 2:
+            return self.walking_frames_bottom
+        elif self.direction == 3:
+            return self.walking_frames_left
+
+    def __createFrames__(self):
+        image = self.sprite_sheet.get_image(0, 0, 32, 32)
+        self.walking_frames_bottom.append(image)
+        image = self.sprite_sheet.get_image(34, 0, 32, 32)
+        self.walking_frames_bottom.append(image)
+        image = self.sprite_sheet.get_image(68, 0, 32, 32)
+        self.walking_frames_bottom.append(image)
+        image = self.sprite_sheet.get_image(102, 0, 32, 32)
+        self.walking_frames_bottom.append(image)
+        image = self.sprite_sheet.get_image(134, 0, 32, 32)
+        self.walking_frames_bottom.append(image)
+        image = self.sprite_sheet.get_image(170, 0, 32, 32)
+        self.walking_frames_bottom.append(image)
+
+        image = self.sprite_sheet.get_image(0, 68, 32, 32)
+        self.walking_frames_right.append(image)
+        image = self.sprite_sheet.get_image(34, 68, 32, 32)
+        self.walking_frames_right.append(image)
+        image = self.sprite_sheet.get_image(68, 68, 32, 32)
+        self.walking_frames_right.append(image)
+        image = self.sprite_sheet.get_image(102, 68, 32, 32)
+        self.walking_frames_right.append(image)
+        image = self.sprite_sheet.get_image(134, 68, 32, 32)
+        self.walking_frames_right.append(image)
+        image = self.sprite_sheet.get_image(170, 68, 32, 32)
+        self.walking_frames_right.append(image)
+
+        image = self.sprite_sheet.get_image(0, 134, 32, 32)
+        self.walking_frames_up.append(image)
+        image = self.sprite_sheet.get_image(34, 134, 32, 32)
+        self.walking_frames_up.append(image)
+        image = self.sprite_sheet.get_image(68, 134, 32, 32)
+        self.walking_frames_up.append(image)
+        image = self.sprite_sheet.get_image(102, 134, 32, 32)
+        self.walking_frames_up.append(image)
+        image = self.sprite_sheet.get_image(134, 134, 32, 32)
+        self.walking_frames_up.append(image)
+        image = self.sprite_sheet.get_image(170, 134, 32, 32)
+        self.walking_frames_up.append(image)
+
+        image = self.sprite_sheet.get_image(0, 68, 32, 32)
+        image = pygame.transform.flip(image, 32, 0)
+        self.walking_frames_left.append(image)
+        image = self.sprite_sheet.get_image(34, 68, 32, 32)
+        image = pygame.transform.flip(image, 32, 0)
+        self.walking_frames_left.append(image)
+        image = self.sprite_sheet.get_image(68, 68, 32, 32)
+        image = pygame.transform.flip(image, 32, 0)
+        self.walking_frames_left.append(image)
+        image = self.sprite_sheet.get_image(102, 68, 32, 32)
+        image = pygame.transform.flip(image, 32, 0)
+        self.walking_frames_left.append(image)
+        image = self.sprite_sheet.get_image(134, 68, 32, 32)
+        image = pygame.transform.flip(image, 32, 0)
+        self.walking_frames_left.append(image)
+        image = self.sprite_sheet.get_image(170, 68, 32, 32)
+        image = pygame.transform.flip(image, 32, 0)
+        self.walking_frames_left.append(image)
