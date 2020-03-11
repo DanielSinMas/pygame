@@ -3,7 +3,9 @@ import pygame
 from Utilities.FileProcessor import FileProcessor
 from pygame.locals import (
     K_ESCAPE,
+    K_SPACE,
     KEYDOWN,
+    KEYUP,
     QUIT,
 )
 
@@ -48,7 +50,7 @@ class Game:
 
     def draw(self):
         self.screen.fill(BGCOLOR)
-        #self.draw_grid()
+        # self.draw_grid()
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
         pygame.display.flip()
@@ -66,6 +68,9 @@ class Game:
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     self.quit()
+            if event.type == KEYUP:
+                if event.key == K_SPACE:
+                    self.player.action_pressed()
 
     def show_start_screen(self):
         pass

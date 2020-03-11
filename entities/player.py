@@ -26,7 +26,6 @@ class Player(pygame.sprite.Sprite):
         self.image = self.walking_frames_bottom[self.image_position]
         self.direction = 2
 
-
     def get_keys(self):
         self.vx, self.vy = 0, 0
         keys = pygame.key.get_pressed()
@@ -47,7 +46,7 @@ class Player(pygame.sprite.Sprite):
             self.vx *= 0.7071
             self.vy *= 0.7071
 
-        if self.vx == 0 and self.vy ==0:
+        if self.vx == 0 and self.vy == 0:
             self.image_position = 0
 
     def collide_with_walls(self, direction):
@@ -79,11 +78,10 @@ class Player(pygame.sprite.Sprite):
         self.collide_with_walls('x')
         self.rect.y = self.y
         self.collide_with_walls('y')
-        self.now = pygame.time.get_ticks()
-        if self.now - self.last_update > 50:
+        now = pygame.time.get_ticks()
+        if now - self.last_update > 50:
             self.image_position += 1
-            self.last_update = self.now
-            print(self.image_position)
+            self.last_update = now
             if self.image_position == 6:
                 self.image_position = 0
             frames = self.__get_frames()
@@ -157,3 +155,30 @@ class Player(pygame.sprite.Sprite):
         image = self.sprite_sheet.get_image(170, 68, 32, 32)
         image = pygame.transform.flip(image, 32, 0)
         self.walking_frames_left.append(image)
+
+    def action_pressed(self):
+        object_selected_x = int(self.x / TILESIZE)
+        object_selected_y = int(self.y / TILESIZE)
+        print("Player:" + str(object_selected_x), str(object_selected_y))
+        if self.direction == 0:
+            object_selected_y += - 1
+        if self.direction == 1:
+            object_selected_x += 1
+        if self.direction == 2:
+            object_selected_y += 1
+        if self.direction == 3:
+            object_selected_x += -1
+
+        print("Object:" + str(object_selected_x), str(object_selected_y) + "\n")
+
+        for col, item in enumerate(self.game.processor.map_data[object_selected_y]):
+            if col == object_selected_x:
+                entity = self.__get_item_at__(object_selected_x, object_selected_y)
+                if entity is not None:
+                    entity.player_interaction()
+                pass
+
+    def __get_item_at__(self, x, y):
+        for entity in self.game.walls:
+            if entity.x == x and entity.y == y:
+                return entity
