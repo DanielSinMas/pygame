@@ -9,7 +9,9 @@ from pygame.locals import (
     QUIT,
 )
 
+from Utilities.TiledMap import TiledMap
 from entities.Camera import Camera
+from entities.Obstacle import Obstacle
 from entities.Wall import Wall
 from entities.player import Player
 
@@ -24,17 +26,19 @@ class Game:
 
     def load_data(self):
         self.processor = FileProcessor(self, '../maps/level2.txt')
+        self.tiledmap = TiledMap('maps/map1/map1.tmx')
+        self.map = self.tiledmap.make_map()
 
     def new(self):
         self.all_sprites = pygame.sprite.Group()
         self.walls = pygame.sprite.Group()
-        for row, tiles in enumerate(self.processor.map_data):
-            for col, tile in enumerate(tiles):
-                if tile == '1':
-                    Wall(self, col, row)
-                if tile == 'P':
-                    self.player = Player(self, col, row)
-        self.camera = Camera(self.processor.width, self.processor.height)
+
+        for tile_object in self.tiledmap.tmxdata.objects:
+            if tile_object.name == 'Player':
+                self.player = Player(self, tile_object.x, tile_object.y)
+            elif tile_object.name == 'wall':
+                Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
+        self.camera = Camera(self.tiledmap.width, self.tiledmap.height)
 
     def run(self):
         self.playing = True
@@ -49,8 +53,8 @@ class Game:
         self.camera.update(self.player)
 
     def draw(self):
-        self.screen.fill(BGCOLOR)
         # self.draw_grid()
+        self.screen.blit(self.map, self.camera.apply_rect(self.map.get_rect()))
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
         pygame.display.flip()

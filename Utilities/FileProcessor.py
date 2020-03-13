@@ -1,4 +1,5 @@
 from os import path
+
 from Constants import *
 
 class FileProcessor:

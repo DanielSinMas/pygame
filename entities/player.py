@@ -13,8 +13,8 @@ class Player(pygame.sprite.Sprite):
         self.image.fill(YELLOW)
         self.rect = self.image.get_rect()
         self.vx, self.vy = 0, 0
-        self.x = x * TILESIZE
-        self.y = y * TILESIZE
+        self.x = x
+        self.y = y
         self.sprite_sheet = SpriteSheet("images/isaac.png")
         self.walking_frames_right = []
         self.walking_frames_left = []
@@ -157,9 +157,8 @@ class Player(pygame.sprite.Sprite):
         self.walking_frames_left.append(image)
 
     def action_pressed(self):
-        object_selected_x = int(self.x / TILESIZE)
-        object_selected_y = int(self.y / TILESIZE)
-        print("Player:" + str(object_selected_x), str(object_selected_y))
+        object_selected_x = int((self.x + TILESIZE/2) / TILESIZE)
+        object_selected_y = int((self.y + TILESIZE/2) / TILESIZE)
         if self.direction == 0:
             object_selected_y += - 1
         if self.direction == 1:
@@ -168,8 +167,6 @@ class Player(pygame.sprite.Sprite):
             object_selected_y += 1
         if self.direction == 3:
             object_selected_x += -1
-
-        print("Object:" + str(object_selected_x), str(object_selected_y) + "\n")
 
         for col, item in enumerate(self.game.processor.map_data[object_selected_y]):
             if col == object_selected_x:
