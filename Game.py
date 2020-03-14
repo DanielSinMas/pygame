@@ -12,7 +12,7 @@ from pygame.locals import (
 from Utilities.TiledMap import TiledMap
 from entities.Camera import Camera
 from entities.Obstacle import Obstacle
-from entities.Wall import Wall
+from entities.Transition import Transition
 from entities.player import Player
 
 
@@ -22,22 +22,35 @@ class Game:
         self.screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
         self.clock = pygame.time.Clock()
         pygame.key.set_repeat(500, 100)
-        self.load_data()
 
-    def load_data(self):
-        self.processor = FileProcessor(self, '../maps/level2.txt')
-        self.tiledmap = TiledMap('maps/map1/map1.tmx')
-        self.map = self.tiledmap.make_map()
-
-    def new(self):
         self.all_sprites = pygame.sprite.Group()
         self.walls = pygame.sprite.Group()
+        self.transitions = pygame.sprite.Group()
+        self.player = Player(self, 0, 0)
+        self.load_data('maps/map1/map1.tmx')
+
+    def load_data(self, map):
+        self.tiledmap = TiledMap(map)
+        self.map = self.tiledmap.make_map()
+        self.new()
+
+    def new(self):
+        self.all_sprites.empty()
+        self.walls.empty()
+        self.transitions.empty()
+        self.all_sprites = pygame.sprite.Group()
+        self.walls = pygame.sprite.Group()
+        self.transitions = pygame.sprite.Group()
+
+        pygame.time.wait(500)
 
         for tile_object in self.tiledmap.tmxdata.objects:
             if tile_object.name == 'Player':
                 self.player = Player(self, tile_object.x, tile_object.y)
             elif tile_object.name == 'wall':
                 Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
+            elif tile_object.name == 'transition':
+                Transition(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height, tile_object.goto)
         self.camera = Camera(self.tiledmap.width, self.tiledmap.height)
 
     def run(self):
@@ -54,6 +67,7 @@ class Game:
 
     def draw(self):
         # self.draw_grid()
+        self.screen.fill((0, 0, 0))
         self.screen.blit(self.map, self.camera.apply_rect(self.map.get_rect()))
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite))

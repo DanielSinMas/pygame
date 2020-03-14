@@ -50,42 +50,49 @@ class Player(pygame.sprite.Sprite):
             self.image_position = 0
 
     def collide_with_walls(self, direction):
+        hit_with_walls = pygame.sprite.spritecollide(self, self.game.walls, False)
         if direction == 'x':
-            hits = pygame.sprite.spritecollide(self, self.game.walls, False)
-            if hits:
+            if hit_with_walls:
                 if self.vx > 0:
-                    self.x = hits[0].rect.left - self.rect.width
+                    self.x = hit_with_walls[0].rect.left - self.rect.width
                 if self.vx < 0:
-                    self.x = hits[0].rect.right
+                    self.x = hit_with_walls[0].rect.right
                 self.vx = 0
                 self.rect.x = self.x
 
         if direction == 'y':
-            hits = pygame.sprite.spritecollide(self, self.game.walls, False)
-            if hits:
+            if hit_with_walls:
                 if self.vy > 0:
-                    self.y = hits[0].rect.top - self.rect.height
+                    self.y = hit_with_walls[0].rect.top - self.rect.height
                 if self.vy < 0:
-                    self.y = hits[0].rect.bottom
+                    self.y = hit_with_walls[0].rect.bottom
                 self.vy = 0
                 self.rect.y = self.y
+
+    def collide_with_transitions(self):
+        hit_with_transition = pygame.sprite.spritecollide(self, self.game.transitions, False)
+        if hit_with_transition:
+            self.game.load_data(hit_with_transition[0].go_to)
+            return True
+        return False
 
     def update(self):
         self.get_keys()
         self.x += self.vx * self.game.dt
         self.y += self.vy * self.game.dt
-        self.rect.x = self.x
-        self.collide_with_walls('x')
-        self.rect.y = self.y
-        self.collide_with_walls('y')
-        now = pygame.time.get_ticks()
-        if now - self.last_update > 50:
-            self.image_position += 1
-            self.last_update = now
-            if self.image_position == 6:
-                self.image_position = 0
-            frames = self.__get_frames()
-            self.image = frames[self.image_position]
+        if not self.collide_with_transitions():
+            self.rect.x = self.x
+            self.collide_with_walls('x')
+            self.rect.y = self.y
+            self.collide_with_walls('y')
+            now = pygame.time.get_ticks()
+            if now - self.last_update > 50:
+                self.image_position += 1
+                self.last_update = now
+                if self.image_position == 6:
+                    self.image_position = 0
+                frames = self.__get_frames()
+                self.image = frames[self.image_position]
 
     def __get_frames(self):
         if self.direction == 0:
