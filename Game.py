@@ -67,6 +67,7 @@ class Game:
 
     def draw(self):
         # self.draw_grid()
+        print(self.clock)
         self.screen.fill((0, 0, 0))
         self.screen.blit(self.map, self.camera.apply_rect(self.map.get_rect()))
         for sprite in self.all_sprites:
@@ -89,6 +90,16 @@ class Game:
             if event.type == KEYUP:
                 if event.key == K_SPACE:
                     self.player.action_pressed()
+
+    def fade_out(self):
+        fade_surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+        fade_surface.fill((0, 0, 0))
+        for alpha in range(0, 300):
+            print(alpha)
+            fade_surface.set_alpha(alpha)
+            self.screen.blit(fade_surface, (0, 0))
+            pygame.display.flip()
+            pygame.time.delay(5)
 
     def show_start_screen(self):
         pass

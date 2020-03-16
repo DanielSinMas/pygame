@@ -72,7 +72,8 @@ class Player(pygame.sprite.Sprite):
     def collide_with_transitions(self):
         hit_with_transition = pygame.sprite.spritecollide(self, self.game.transitions, False)
         if hit_with_transition:
-            self.game.load_data(hit_with_transition[0].go_to)
+            #self.game.load_data(hit_with_transition[0].go_to)
+            self.game.fade_out()
             return True
         return False
 
