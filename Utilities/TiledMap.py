@@ -2,6 +2,7 @@ import pygame
 from pytmx import pytmx
 from pytmx.util_pygame import load_pygame
 
+
 class TiledMap:
     def __init__(self, filename):
         tm = load_pygame(filename)

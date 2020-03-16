@@ -72,13 +72,14 @@ class Player(pygame.sprite.Sprite):
     def collide_with_transitions(self):
         hit_with_transition = pygame.sprite.spritecollide(self, self.game.transitions, False)
         if hit_with_transition:
-            #self.game.load_data(hit_with_transition[0].go_to)
-            self.game.fade_out()
+            # self.game.load_data(hit_with_transition[0].go_to)
+            self.game.load_data(hit_with_transition[0].go_to)
             return True
         return False
 
     def update(self):
-        self.get_keys()
+        if self.game.player_interaction_allowed:
+            self.get_keys()
         self.x += self.vx * self.game.dt
         self.y += self.vy * self.game.dt
         if not self.collide_with_transitions():
@@ -165,8 +166,8 @@ class Player(pygame.sprite.Sprite):
         self.walking_frames_left.append(image)
 
     def action_pressed(self):
-        object_selected_x = int((self.x + TILESIZE/2) / TILESIZE)
-        object_selected_y = int((self.y + TILESIZE/2) / TILESIZE)
+        object_selected_x = int((self.x + TILESIZE / 2) / TILESIZE)
+        object_selected_y = int((self.y + TILESIZE / 2) / TILESIZE)
         if self.direction == 0:
             object_selected_y += - 1
         if self.direction == 1:
